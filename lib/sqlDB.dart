@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class SqlDB {
-  Database? _db;
+  static Database? _db;
 
   Future<Database?> get db async {
     if (_db == null) {
@@ -18,13 +18,17 @@ class SqlDB {
     String path = join(_dbpath, 'myDB._db');
     _db = await openDatabase(path, version: 1,
         onCreate: (Database _db, int version) async {
-      await _db.execute('''
+      Batch batch = _db.batch();
+
+       batch.execute('''
     CREATE TABLE notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT,
-    note TEXT
+    title TEXT NOT NULL,
+    note TEXT NOT NULL,
+    color INTEGER NOT NULL
     )
     ''');
+       await batch.commit();
       print('----------------DATABASE CREATED----------------');
     }, onUpgrade: (Database d, int oldversion, int newversion) {
       print('--------------DATABASE UPDATED-------------------');
@@ -47,8 +51,8 @@ class SqlDB {
     return response;
   }
 
-  insert( Map<String, Object> st) async {
-    int response = await _db!.insert('notes', st);
+  insert( Map<String, Object> map) async {
+    int response = await _db!.insert('notes', map);
     return response;
   }
 

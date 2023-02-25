@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sqfl/add%20task%20page.dart';
 
 import 'control page.dart';
 import 'tasks page.dart';
@@ -18,9 +19,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.teal,
+        primarySwatch: Colors.blue,
       ),
       home: TaskPage(),
+      routes: {
+        'add' : (context)=>AddTask(),
+        'task' : (context)=>TaskPage(),
+      },
     );
   }
 }
