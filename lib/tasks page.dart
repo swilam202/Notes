@@ -44,11 +44,44 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> pages = [
-      const Scaffold(
-        body: null,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Tasks',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        actions: [
+          ElevatedButton(
+            onPressed: () async {
+              await sqlDB.initialDB();
+              setState(() {});
+            },
+            child: const Text('init data'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await sqlDB.deleteAll();
+              setState(() {});
+            },
+            child: const Text('delete all data'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              int response = await sqlDB.insert({
+                'title': 'Testing Testing one two three',
+                'note': 'o ui jify uifdj iye uiodj iiueyf8ueiouef oi eA7A',
+                'color': r.nextInt(colors.length)
+              });
+              print('+++++++++ $response ++++++++++');
+              setState(() {});
+            },
+            child: const Text('insert data'),
+          ),
+        ],
       ),
-      FutureBuilder(
+      body: FutureBuilder(
         future: taskList(),
         builder: (_, snapshot) {
           if (snapshot.hasData == false) {
@@ -105,7 +138,7 @@ class _TaskPageState extends State<TaskPage> {
                             children: [
                               IconButton(
                                 onPressed: () {},
-                                icon: Icon(Icons.star_border_outlined),
+                                icon: const Icon(Icons.mode_rounded,color: Colors.blue,),
                               ),
                               IconButton(
                                 onPressed: () {
@@ -129,128 +162,55 @@ class _TaskPageState extends State<TaskPage> {
           }
         },
       ),
-    ];
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Tasks',
-            style: TextStyle(color: Colors.black),
-          ),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          actions: [
-            ElevatedButton(
-              onPressed: () async {
-                await sqlDB.initialDB();
-                setState(() {});
-              },
-              child: const Text('init data'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await sqlDB.deleteAll();
-                setState(() {});
-              },
-              child: const Text('delete all data'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                int response = await sqlDB.insert({
-                  'title': 'Testing Testing one two three',
-                  'note': 'o ui jify uifdj iye uiodj iiueyf8ueiouef oi eA7A',
-                  'color': r.nextInt(colors.length)
-                });
-                print('+++++++++ $response ++++++++++');
-                setState(() {});
-              },
-              child: const Text('insert data'),
-            ),
-          ],
-        ),
-        body: pages[current],
-        bottomNavigationBar: BottomNavigationBar(
-          selectedLabelStyle: const TextStyle(color: Colors.black),
-          unselectedLabelStyle: const TextStyle(color: Colors.grey),
-          currentIndex: current,
-          onTap: switchIndex,
-          type: BottomNavigationBarType.shifting,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.star,
-                color: Colors.amber,
-              ),
-              label: 'Favorite',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.task,
-                color: Colors.blue,
-              ),
-              label: 'Tasks',
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed:  ()=>showBottomSheet(context: context, builder: (_){
-            return  Expanded(
-              child: Form(
-                key: key1,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'Enter Title',
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showBottomSheet(
+            context: context,
+            builder: (_) {
+              return Expanded(
+                child: Form(
+                  key: key1,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Title',
+                        ),
+                        controller: titleController,
                       ),
-                      controller: titleController,
-                    ),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'Enter note',
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter note',
+                        ),
+                        controller: noteController,
                       ),
-                      controller: noteController,
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (titleController.text.isNotEmpty && noteController.text.isNotEmpty) {
-                          int response = await sqlDB.insert(
-                            {
-                              'title': titleController.text,
-                              'note': noteController.text,
-                              'color': r.nextInt(5)
-                            },
-                          );
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (titleController.text.isNotEmpty &&
+                              noteController.text.isNotEmpty) {
+                            int response = await sqlDB.insert(
+                              {
+                                'title': titleController.text,
+                                'note': noteController.text,
+                                'color': r.nextInt(5)
+                              },
+                            );
 
-                          Navigator.of(context).pushReplacementNamed('task');
+                            Navigator.of(context).pushReplacementNamed('task');
 
-                          print('+++++++++ $response ++++++++++');
-                        }
-                        else{
-                          /// get.Snack
-                        }
-                      },
-                      child: const Text('insert data'),
-                    ),
-                  ],
+                            print('+++++++++ $response ++++++++++');
+                          } else {
+                            /// get.Snack
+                          }
+                        },
+                        child: const Text('insert data'),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }),
-          child: const Icon(Icons.add),
-        ),
+              );
+            }),
+        child: const Icon(Icons.add),
       ),
     );
   }
-
-}
-///=> Navigator.of(context).pushNamed('add')
-///
-///
-///
-
-
-button(){
-
 }
