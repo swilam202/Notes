@@ -3,8 +3,6 @@ import 'package:get/get.dart';
 import 'package:sqfl/sqlDB.dart';
 import 'dart:math';
 
-import 'add task page.dart';
-
 class TaskPage extends StatefulWidget {
   @override
   State<TaskPage> createState() => _TaskPageState();
@@ -25,8 +23,7 @@ class _TaskPageState extends State<TaskPage> {
     return list;
   }
 
-  GlobalKey key1 = GlobalKey();
-  GlobalKey key2 = GlobalKey();
+  GlobalKey key = GlobalKey();
 
   List colors = [
     const Color.fromRGBO(238, 174, 174, 1.0),
@@ -38,8 +35,6 @@ class _TaskPageState extends State<TaskPage> {
 
   TextEditingController titleController = TextEditingController();
   TextEditingController noteController = TextEditingController();
-  TextEditingController titleController1 = TextEditingController();
-  TextEditingController noteController1 = TextEditingController();
 
   Random r = Random();
   int colorIndex = 0;
@@ -47,34 +42,21 @@ class _TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.black,
         title: const Text(
           'Tasks',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.white,
         centerTitle: true,
         actions: [
-          IconButton(
+          TextButton.icon(
             onPressed: () {
               Get.defaultDialog(
                 title: 'Are you sure you want to delete all tasks?',
                 content: Row(
                   children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          sqlDB.deleteAll();
-                          sqlDB.initialDB();
-                          setState(() {});
-                          Get.back();
-                        },
-                        child: const Text(
-                          'Delete',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ),
                     Expanded(
                       child: TextButton(
                         onPressed: () {
@@ -86,10 +68,27 @@ class _TaskPageState extends State<TaskPage> {
                         ),
                       ),
                     ),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () async {
+                          sqlDB.deleteTasks();
+                          setState(() {});
+                          Get.back();
+                        },
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
             },
+            label: const Text(
+              'Delete All',
+              style: TextStyle(color: Colors.red),
+            ),
             icon: const Icon(
               Icons.delete,
               color: Colors.red,
@@ -190,66 +189,8 @@ class _TaskPageState extends State<TaskPage> {
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  titleController1.text =
-                                      snapshot.data![index]['title'];
-                                  noteController1.text =
-                                      snapshot.data![index]['note'];
-                                  Get.bottomSheet(
-                                    Padding(
-                                      padding: const EdgeInsets.all(20),
-                                      child: ListView(
-                                        children: [
-                                          Form(
-                                            key: key1,
-                                            child: Column(
-                                              children: [
-                                                TextFormField(
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    hintText: 'Enter Title',
-                                                  ),
-                                                  controller: titleController1,
-                                                ),
-                                                TextFormField(
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    hintText: 'Enter note',
-                                                  ),
-                                                  controller: noteController1,
-                                                ),
-                                                ElevatedButton(
-                                                  onPressed: () async {
-                                                    int response = await sqlDB
-                                                        .update(
-                                                            snapshot.data![
-                                                                index]['id'],
-                                                            {
-                                                          'title':
-                                                              titleController1
-                                                                  .text,
-                                                          'note':
-                                                              noteController1
-                                                                  .text,
-                                                        });
-                                                    setState(() {});
-
-                                                    Get.back();
-                                                  },
-                                                  child:
-                                                      const Text('Edit data'),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    backgroundColor: Colors.white,
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(20),
-                                            topRight: Radius.circular(20))),
-                                  );
+                                  sheet(snapshot.data![index]['title'],
+                                      snapshot.data![index]['note']);
                                 },
                                 icon: const Icon(
                                   Icons.mode_rounded,
@@ -279,68 +220,118 @@ class _TaskPageState extends State<TaskPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.red,
           child: const Icon(Icons.add),
           onPressed: () {
-            Get.bottomSheet(
-              Padding(
-                padding: const EdgeInsets.all(18),
-                child: ListView(
-                  children: [
-                    Form(
-                      key: key2,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              hintText: 'Enter Title',
-                            ),
-                            controller: titleController,
-                          ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              hintText: 'Enter note',
-                            ),
-                            controller: noteController,
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (titleController.text.isNotEmpty &&
-                                  noteController.text.isNotEmpty) {
-                                int response = await sqlDB.insert(
-                                  {
-                                    'title': titleController.text,
-                                    'note': noteController.text,
-                                    'color': r.nextInt(5)
-                                  },
-                                );
-                                setState(() {});
-                                Get.back();
-                              } else {
-                                Get.snackbar(
-                                    'Warning', "All fileds mustn't be null",
-                                    icon: const Icon(
-                                      Icons.warning_amber,
-                                      color: Colors.red,
-                                    ),
-                                    colorText: Colors.red,
-                                    snackPosition: SnackPosition.BOTTOM);
-                              }
-                            },
-                            child: const Text('insert data'),
-                          ),
-                        ],
+            titleController.text = '';
+            noteController.text = '';
+            sheet('', '');
+          }),
+    );
+  }
+
+  warning() {
+    Get.snackbar(
+      'Warning',
+      "All fileds mustn't be null",
+      icon: const Icon(
+        Icons.warning_amber,
+        color: Colors.red,
+      ),
+      colorText: Colors.red,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.black,
+    );
+  }
+
+  sheet(String one, String two) {
+    titleController.text = one;
+    noteController.text = two;
+    Get.bottomSheet(
+      Padding(
+        padding: const EdgeInsets.all(20),
+        child: ListView(
+          children: [
+            Form(
+              key: key,
+              child: Column(
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'Enter Title ',
+                      hintStyle: const TextStyle(color: Colors.white),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(color: Colors.white),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(color: Colors.white),
                       ),
                     ),
-                  ],
-                ),
+                    controller: titleController,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        hintText: 'Enter your notes....',
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 50, horizontal: 15),
+                        hintStyle: const TextStyle(color: Colors.white),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                      ),
+                      controller: noteController,
+                    ),
+                  ),
+                  OutlinedButton(
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                          const Color.fromRGBO(119, 34, 34, 1.0),
+                        ),
+                        padding: MaterialStateProperty.all(
+                            const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 70))),
+                    onPressed: () async {
+                      if (titleController.text.isNotEmpty &&
+                          noteController.text.isNotEmpty) {
+                        await sqlDB.insert(
+                          {
+                            'title': titleController.text,
+                            'note': noteController.text,
+                            'color': r.nextInt(5)
+                          },
+                        );
+                        setState(() {});
+                        Get.back();
+                      } else {
+                        warning();
+                      }
+                    },
+                    child: const Text('insert data'),
+                  ),
+                ],
               ),
-              backgroundColor: Colors.white,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20))),
-            );
-          }),
+            ),
+          ],
+        ),
+      ),
+      backgroundColor: const Color.fromRGBO(89, 83, 83, 1.0),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
     );
   }
 }

@@ -20,7 +20,7 @@ class SqlDB {
         onCreate: (Database _db, int version) async {
       Batch batch = _db.batch();
 
-       batch.execute('''
+      batch.execute('''
     CREATE TABLE notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -28,7 +28,8 @@ class SqlDB {
     color INTEGER NOT NULL
     )
     ''');
-       await batch.commit();
+
+      await batch.commit();
       print('----------------DATABASE CREATED----------------');
     }, onUpgrade: (Database d, int oldversion, int newversion) {
       print('--------------DATABASE UPDATED-------------------');
@@ -51,7 +52,7 @@ class SqlDB {
     return response;
   }
 
-  insert( Map<String, Object> map) async {
+  insert(Map<String, Object> map) async {
     int response = await _db!.insert('notes', map);
     return response;
   }
@@ -67,6 +68,18 @@ class SqlDB {
     return response;
   }
 
+  deleteTasks() async {
+    int response = await _db!.delete('notes');
+    return response;
+  }
+
+  deleteAll() async {
+    String _dbpath = await getDatabasesPath();
+    String path = join(_dbpath, 'myDB._db');
+    await deleteDatabase(path);
+    print('---------- DATABASE DELETED ------------');
+  }
+
   updateData(String sql) async {
     int response = await _db!.rawUpdate(sql);
     return response;
@@ -80,12 +93,5 @@ class SqlDB {
       whereArgs: [id],
     );
     return response;
-  }
-
-  deleteAll() async {
-    String _dbpath = await getDatabasesPath();
-    String path = join(_dbpath, 'myDB._db');
-    await deleteDatabase(path);
-    print('---------- DATABASE DELETED ------------');
   }
 }
