@@ -4,23 +4,19 @@ import 'package:path/path.dart';
 class SqlDB {
   static Database? _db;
 
-  Future<Database?> get db async {
-    if (_db == null) {
-      initialDB();
-      return _db;
-    } else {
-      return _db;
-    }
-  }
+  //   get dbd async {
+  //   if (_db == null) {
+  //     await initialDB();
+  //   }
+  //
+  // }
 
   initialDB() async {
-    String _dbpath = await getDatabasesPath();
-    String path = join(_dbpath, 'myDB._db');
+    String dbpath = await getDatabasesPath();
+    String path = join(dbpath, 'myDB._db');
     _db = await openDatabase(path, version: 1,
-        onCreate: (Database _db, int version) async {
-      Batch batch = _db.batch();
-
-      batch.execute('''
+        onCreate: (_db, int version) async {
+      await _db.execute('''
     CREATE TABLE notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -28,13 +24,10 @@ class SqlDB {
     color INTEGER NOT NULL
     )
     ''');
-
-      await batch.commit();
       print('----------------DATABASE CREATED----------------');
     }, onUpgrade: (Database d, int oldversion, int newversion) {
       print('--------------DATABASE UPDATED-------------------');
     });
-    return _db;
   }
 
   queryData(String sql) async {
@@ -74,8 +67,8 @@ class SqlDB {
   }
 
   deleteAll() async {
-    String _dbpath = await getDatabasesPath();
-    String path = join(_dbpath, 'myDB._db');
+    String dbpath = await getDatabasesPath();
+    String path = join(dbpath, 'myDB._db');
     await deleteDatabase(path);
     print('---------- DATABASE DELETED ------------');
   }

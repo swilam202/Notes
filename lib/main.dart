@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sqfl/sqlDB.dart';
 import 'tasks page.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  SqlDB sqlDB = SqlDB();
-  sqlDB.db;
   runApp(const MyApp());
 }
 

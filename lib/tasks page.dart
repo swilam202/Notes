@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sqfl/sqlDB.dart';
+import 'package:sqfl/controller/dataController.dart';
 import 'dart:math';
+import 'db/sqlDB.dart';
 
 class TaskPage extends StatefulWidget {
   @override
@@ -15,15 +16,11 @@ class _TaskPageState extends State<TaskPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    sqlDB.db;
-  }
-
-  Future<List> taskList() async {
-    List list = await sqlDB.query();
-    return list;
+    sqlDB.initialDB();
   }
 
   GlobalKey key = GlobalKey();
+  DataController controller = Get.put(DataController());
 
   List colors = [
     const Color.fromRGBO(238, 174, 174, 1.0),
@@ -71,8 +68,7 @@ class _TaskPageState extends State<TaskPage> {
                     Expanded(
                       child: TextButton(
                         onPressed: () async {
-                          sqlDB.deleteTasks();
-                          setState(() {});
+                          controller.deleteAllTask();
                           Get.back();
                         },
                         child: const Text(
@@ -97,126 +93,137 @@ class _TaskPageState extends State<TaskPage> {
         ],
       ),
       body: FutureBuilder(
-        future: taskList(),
-        builder: (_, snapshot) {
-          if (snapshot.hasData == false) {
-            return const Center(child: CircularProgressIndicator());
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (_, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Get.bottomSheet(
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                snapshot.data![index]['title'],
-                                style: const TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
+        future: Future.delayed(
+          const Duration(seconds: 2),
+        ),
+        builder: (context, snapshot) {
+          return snapshot.connectionState == ConnectionState.waiting
+              ? const Center(child: CircularProgressIndicator())
+              : Obx(() {
+                  controller.taskList();
+                  return ListView.builder(
+                    itemCount: controller.tasks.length,
+                    itemBuilder: (_, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Get.bottomSheet(
+                              Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Text(
+                                      controller.tasks[index]['title'],
+                                      style: const TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  const Divider(
+                                    thickness: 5,
+                                    height: 5,
+                                    indent: 20,
+                                    endIndent: 20,
+                                  ),
+                                  SingleChildScrollView(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Text(
+                                        controller.tasks[index]['note'],
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
-                            ),
-                            const Divider(
-                              thickness: 5,
-                              height: 5,
-                              indent: 20,
-                              endIndent: 20,
-                            ),
-                            SingleChildScrollView(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Text(
-                                  snapshot.data![index]['note'],
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400),
+                              backgroundColor:
+                                  colors[controller.tasks[index]['color']]);
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 10),
+                          child: Container(
+                            height: 300,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color:
+                                    colors[controller.tasks[index]['color']]),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(17),
+                                  child: Text(
+                                    controller.tasks[index]['title'],
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 35,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    softWrap: true,
+                                  ),
                                 ),
-                              ),
-                            )
-                          ],
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15),
+                                    child: Text(
+                                      controller.tasks[index]['note'],
+                                      textAlign: TextAlign.start,
+                                      overflow: TextOverflow.fade,
+                                      softWrap: true,
+                                      maxLines: 8,
+                                      style: const TextStyle(
+                                        fontSize: 25,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        sheet(
+                                          controller.tasks[index]['title'],
+                                          controller.tasks[index]['note'],
+                                          0,
+                                          controller.tasks[index]['id'],
+                                          'Update task',
+                                        );
+                                      },
+                                      icon: const Icon(
+                                        Icons.mode_rounded,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        controller.deleteTask(
+                                            controller.tasks[index]['id']);
+                                      },
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
                         ),
-                        backgroundColor:
-                            colors[snapshot.data![index]['color']]);
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 10),
-                    child: Container(
-                      height: 300,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: colors[snapshot.data![index]['color']]),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(17),
-                            child: Text(
-                              snapshot.data![index]['title'],
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 35,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              softWrap: true,
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(15),
-                              child: Text(
-                                snapshot.data![index]['note'],
-                                textAlign: TextAlign.start,
-                                overflow: TextOverflow.fade,
-                                softWrap: true,
-                                maxLines: 8,
-                                style: const TextStyle(
-                                  fontSize: 25,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  sheet(snapshot.data![index]['title'],
-                                      snapshot.data![index]['note']);
-                                },
-                                icon: const Icon(
-                                  Icons.mode_rounded,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  sqlDB.delete(snapshot.data![index]['id']);
-                                  setState(() {});
-                                },
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          }
+                      );
+                    },
+                  );
+                });
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -225,7 +232,7 @@ class _TaskPageState extends State<TaskPage> {
           onPressed: () {
             titleController.text = '';
             noteController.text = '';
-            sheet('', '');
+            sheet('', '', 1, 1, 'New task');
           }),
     );
   }
@@ -244,7 +251,7 @@ class _TaskPageState extends State<TaskPage> {
     );
   }
 
-  sheet(String one, String two) {
+  sheet(String one, String two, int index, int id, String text) {
     titleController.text = one;
     noteController.text = two;
     Get.bottomSheet(
@@ -293,31 +300,39 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   OutlinedButton(
                     style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                        backgroundColor: MaterialStateProperty.all(
-                          const Color.fromRGBO(119, 34, 34, 1.0),
-                        ),
-                        padding: MaterialStateProperty.all(
-                            const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 70))),
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                      backgroundColor: MaterialStateProperty.all(
+                        const Color.fromRGBO(119, 34, 34, 1.0),
+                      ),
+                      padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 70),
+                      ),
+                    ),
                     onPressed: () async {
                       if (titleController.text.isNotEmpty &&
                           noteController.text.isNotEmpty) {
-                        await sqlDB.insert(
-                          {
+                        if (index == 1) {
+                          await controller.addTask(
+                            {
+                              'title': titleController.text,
+                              'note': noteController.text,
+                              'color': r.nextInt(5)
+                            },
+                          );
+                        } else {
+                          await controller.updateTask(id, {
                             'title': titleController.text,
-                            'note': noteController.text,
-                            'color': r.nextInt(5)
-                          },
-                        );
-                        setState(() {});
+                            'note': noteController.text
+                          });
+                        }
+
                         Get.back();
                       } else {
                         warning();
                       }
                     },
-                    child: const Text('insert data'),
+                    child: Text(text),
                   ),
                 ],
               ),
