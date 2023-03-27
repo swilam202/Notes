@@ -26,7 +26,7 @@ class DataController extends GetxController {
   }
 
   Future deleteAllTask() async {
-    await sqlDB.deleteAll();
+    await sqlDB.deleteTasks();
     taskList();
   }
 }

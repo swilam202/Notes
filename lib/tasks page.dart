@@ -44,13 +44,13 @@ class _TaskPageState extends State<TaskPage> {
         backgroundColor: Colors.black,
         title: const Text(
           'Tasks',
-          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         actions: [
           TextButton.icon(
             onPressed: () {
               Get.defaultDialog(
+                backgroundColor: Color.fromRGBO(103, 103, 103, 1.0),
                 title: 'Are you sure you want to delete all tasks?',
                 content: Row(
                   children: [
@@ -94,137 +94,165 @@ class _TaskPageState extends State<TaskPage> {
       ),
       body: FutureBuilder(
         future: Future.delayed(
-          const Duration(seconds: 2),
+          const Duration(milliseconds: 1500),
         ),
-        builder: (context, snapshot) {
-          return snapshot.connectionState == ConnectionState.waiting
-              ? const Center(child: CircularProgressIndicator())
-              : Obx(() {
+        builder: (_, snapshot) => snapshot.connectionState ==
+                ConnectionState.waiting
+            ? const Center(child: CircularProgressIndicator())
+            : Obx(
+                () {
                   controller.taskList();
-                  return ListView.builder(
-                    itemCount: controller.tasks.length,
-                    itemBuilder: (_, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Get.bottomSheet(
-                              Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(20),
-                                    child: Text(
-                                      controller.tasks[index]['title'],
-                                      style: const TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  const Divider(
-                                    thickness: 5,
-                                    height: 5,
-                                    indent: 20,
-                                    endIndent: 20,
-                                  ),
-                                  SingleChildScrollView(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(20),
-                                      child: Text(
-                                        controller.tasks[index]['note'],
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w400),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              backgroundColor:
-                                  colors[controller.tasks[index]['color']]);
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 10),
-                          child: Container(
-                            height: 300,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color:
-                                    colors[controller.tasks[index]['color']]),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(17),
-                                  child: Text(
-                                    controller.tasks[index]['title'],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 35,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    softWrap: true,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15),
-                                    child: Text(
-                                      controller.tasks[index]['note'],
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.fade,
-                                      softWrap: true,
-                                      maxLines: 8,
-                                      style: const TextStyle(
-                                        fontSize: 25,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {
-                                        sheet(
+                  return controller.tasks.isNotEmpty
+                      ? ListView.builder(
+                          itemCount: controller.tasks.length,
+                          itemBuilder: (_, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                Get.bottomSheet(
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(20),
+                                        child: Text(
                                           controller.tasks[index]['title'],
+                                          style: const TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      const Divider(
+                                        thickness: 5,
+                                        height: 5,
+                                        indent: 20,
+                                        endIndent: 20,
+                                      ),
+                                      SingleChildScrollView(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: Text(
+                                            controller.tasks[index]['note'],
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  backgroundColor:
+                                      colors[controller.tasks[index]['color']],
+                                );
+                              },
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 10,
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: colors[controller.tasks[index]
+                                        ['color']],
+                                  ),
+                                  child: Wrap(
+                                    alignment: WrapAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 17,
+                                            top: 17,
+                                            right: 17,
+                                            bottom: 25),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              controller.tasks[index]['title'],
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 35,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                              softWrap: true,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(15),
+                                        child: Text(
                                           controller.tasks[index]['note'],
-                                          0,
-                                          controller.tasks[index]['id'],
-                                          'Update task',
-                                        );
-                                      },
-                                      icon: const Icon(
-                                        Icons.mode_rounded,
-                                        color: Colors.blue,
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.fade,
+                                          softWrap: true,
+                                          maxLines: 8,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 25,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        controller.deleteTask(
-                                            controller.tasks[index]['id']);
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              sheet(
+                                                controller.tasks[index]
+                                                    ['title'],
+                                                controller.tasks[index]['note'],
+                                                0,
+                                                controller.tasks[index]['id'],
+                                                'Update task',
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.mode_rounded,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              controller.deleteTask(controller
+                                                  .tasks[index]['id']);
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : const Center(
+                          child: Text(
+                            'There is no notes for today',
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                });
-        },
+                        );
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.red,

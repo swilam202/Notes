@@ -4,13 +4,6 @@ import 'package:path/path.dart';
 class SqlDB {
   static Database? _db;
 
-  //   get dbd async {
-  //   if (_db == null) {
-  //     await initialDB();
-  //   }
-  //
-  // }
-
   initialDB() async {
     String dbpath = await getDatabasesPath();
     String path = join(dbpath, 'myDB._db');
@@ -28,6 +21,7 @@ class SqlDB {
     }, onUpgrade: (Database d, int oldversion, int newversion) {
       print('--------------DATABASE UPDATED-------------------');
     });
+    return _db;
   }
 
   queryData(String sql) async {
