@@ -196,7 +196,7 @@ class _TaskPageState extends State<TaskPage> {
                                           textAlign: TextAlign.start,
                                           overflow: TextOverflow.fade,
                                           softWrap: true,
-                                          maxLines: 8,
+                                          maxLines: 3,
                                           style: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 25,
