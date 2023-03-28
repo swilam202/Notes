@@ -218,6 +218,7 @@ class _TaskPageState extends State<TaskPage> {
                                                 0,
                                                 controller.tasks[index]['id'],
                                                 'Update task',
+                                                controller.tasks[index]['color'],
                                               );
                                             },
                                             icon: const Icon(
@@ -262,7 +263,7 @@ class _TaskPageState extends State<TaskPage> {
           onPressed: () {
             titleController.text = '';
             noteController.text = '';
-            sheet('', '', 1, 1, 'New task');
+            sheet('', '', 1, 1, 'New Task',0);
           }),
     );
   }
@@ -281,9 +282,10 @@ class _TaskPageState extends State<TaskPage> {
     );
   }
 
-  sheet(String one, String two, int index, int id, String text) {
+  sheet(String one, String two, int index, int id, String text,int color) {
     titleController.text = one;
     noteController.text = two;
+    controller.selected.value = color;
     Get.bottomSheet(
       Obx(
         () => Padding(
