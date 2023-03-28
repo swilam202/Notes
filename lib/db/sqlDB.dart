@@ -7,7 +7,7 @@ class SqlDB {
   initialDB() async {
     String dbpath = await getDatabasesPath();
     String path = join(dbpath, 'myDB._db');
-    _db = await openDatabase(path, version: 1,
+    _db = await openDatabase(path, version: 2,
         onCreate: (_db, int version) async {
       await _db.execute('''
     CREATE TABLE notes (
@@ -18,7 +18,7 @@ class SqlDB {
     )
     ''');
       print('----------------DATABASE CREATED----------------');
-    }, onUpgrade: (Database d, int oldversion, int newversion) {
+    }, onUpgrade: (Database d, int oldversion, int newversion) async {
       print('--------------DATABASE UPDATED-------------------');
     });
     return _db;

@@ -4,6 +4,7 @@ import 'package:sqfl/db/sqlDB.dart';
 class DataController extends GetxController {
   RxList tasks = [].obs;
   SqlDB sqlDB = SqlDB();
+  RxInt selected = 0.obs;
 
   Future taskList() async {
     List task = await sqlDB.query();

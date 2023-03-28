@@ -50,8 +50,10 @@ class _TaskPageState extends State<TaskPage> {
           TextButton.icon(
             onPressed: () {
               Get.defaultDialog(
-                backgroundColor: Color.fromRGBO(103, 103, 103, 1.0),
+                backgroundColor: const Color.fromRGBO(52, 52, 52, 0.9),
                 title: 'Are you sure you want to delete all tasks?',
+                titlePadding: const EdgeInsets.only(
+                    top: 25, left: 20, right: 20, bottom: 15),
                 content: Row(
                   children: [
                     Expanded(
@@ -283,36 +285,42 @@ class _TaskPageState extends State<TaskPage> {
     titleController.text = one;
     noteController.text = two;
     Get.bottomSheet(
-      Padding(
-        padding: const EdgeInsets.all(20),
-        child: ListView(
-          children: [
-            Form(
-              key: key,
-              child: Column(
-                children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: 'Enter Title ',
-                      hintStyle: const TextStyle(color: Colors.white),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: const BorderSide(color: Colors.white),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: const BorderSide(color: Colors.white),
+      Obx(
+        () => Padding(
+          padding: const EdgeInsets.all(20),
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10, top: 10, bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ...List.generate(
+                      colors.length,
+                      (index) => GestureDetector(
+                        onTap: () => controller.selected.value = index,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: CircleAvatar(
+                            minRadius: 15,
+                            backgroundColor: colors[index],
+                            child: controller.selected.value == index
+                                ? const Icon(Icons.check)
+                                : null,
+                          ),
+                        ),
                       ),
                     ),
-                    controller: titleController,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: TextFormField(
+                  ],
+                ),
+              ),
+              Form(
+                key: key,
+                child: Column(
+                  children: [
+                    TextFormField(
                       decoration: InputDecoration(
-                        hintText: 'Enter your notes....',
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 50, horizontal: 15),
+                        hintText: 'Enter Title ',
                         hintStyle: const TextStyle(color: Colors.white),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -323,52 +331,76 @@ class _TaskPageState extends State<TaskPage> {
                           borderSide: const BorderSide(color: Colors.white),
                         ),
                       ),
-                      controller: noteController,
+                      controller: titleController,
                     ),
-                  ),
-                  OutlinedButton(
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                      backgroundColor: MaterialStateProperty.all(
-                        const Color.fromRGBO(119, 34, 34, 1.0),
-                      ),
-                      padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 70),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Enter your notes....',
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 50, horizontal: 15),
+                          hintStyle: const TextStyle(color: Colors.white),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(color: Colors.white),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(color: Colors.white),
+                          ),
+                        ),
+                        controller: noteController,
                       ),
                     ),
-                    onPressed: () async {
-                      if (titleController.text.isNotEmpty &&
-                          noteController.text.isNotEmpty) {
-                        if (index == 1) {
-                          await controller.addTask(
-                            {
+                    OutlinedButton(
+                      style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                          const Color.fromRGBO(119, 34, 34, 1.0),
+                        ),
+                        padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                            vertical: 20,
+                            horizontal: 70,
+                          ),
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (titleController.text.isNotEmpty &&
+                            noteController.text.isNotEmpty) {
+                          if (index == 1) {
+                            await controller.addTask(
+                              {
+                                'title': titleController.text,
+                                'note': noteController.text,
+                                'color': controller.selected.value,
+                              },
+                            );
+                          } else {
+                            await controller.updateTask(id, {
                               'title': titleController.text,
                               'note': noteController.text,
-                              'color': r.nextInt(5)
-                            },
-                          );
-                        } else {
-                          await controller.updateTask(id, {
-                            'title': titleController.text,
-                            'note': noteController.text
-                          });
-                        }
+                              'color': controller.selected.value,
+                            });
+                          }
 
-                        Get.back();
-                      } else {
-                        warning();
-                      }
-                    },
-                    child: Text(text),
-                  ),
-                ],
+                          Get.back();
+                        } else {
+                          warning();
+                        }
+                      },
+                      child: Text(text),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-      backgroundColor: const Color.fromRGBO(89, 83, 83, 1.0),
+      backgroundColor: const Color.fromRGBO(52, 52, 52, 1.0),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
