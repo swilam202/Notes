@@ -111,7 +111,7 @@ class _TaskPageState extends State<TaskPage> {
                             return GestureDetector(
                               onTap: () {
                                 Get.bottomSheet(
-                                  Column(
+                                  ListView(
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.all(20),
@@ -131,16 +131,14 @@ class _TaskPageState extends State<TaskPage> {
                                         indent: 20,
                                         endIndent: 20,
                                       ),
-                                      SingleChildScrollView(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(20),
-                                          child: Text(
-                                            controller.tasks[index]['note'],
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w400,
-                                            ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(20),
+                                        child: Text(
+                                          controller.tasks[index]['note'],
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400,
                                           ),
                                         ),
                                       ),
