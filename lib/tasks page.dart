@@ -111,38 +111,43 @@ class _TaskPageState extends State<TaskPage> {
                             return GestureDetector(
                               onTap: () {
                                 Get.bottomSheet(
-                                  ListView(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: Text(
-                                          controller.tasks[index]['title'],
-                                          style: const TextStyle(
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      const Divider(
-                                        thickness: 5,
-                                        height: 5,
-                                        indent: 20,
-                                        endIndent: 20,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: Text(
-                                          controller.tasks[index]['note'],
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w400,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: Text(
+                                            controller.tasks[index]['title'],
+                                            style: const TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        const Divider(
+                                          thickness: 5,
+                                          height: 5,
+                                          indent: 20,
+                                          endIndent: 20,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: Text(
+                                            controller.tasks[index]['note'],
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   backgroundColor:
                                       colors[controller.tasks[index]['color']],
