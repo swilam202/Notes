@@ -4,12 +4,24 @@ import 'package:path/path.dart';
 class SqlDB {
   static Database? _db;
 
-  initialDB() async {
+  Future<Database> get db async {
+    if (_db == null)
+      return _db = await initDatabase();
+    else
+      return _db!;
+  }
+
+  initDatabase() async {
     String dbpath = await getDatabasesPath();
-    String path = join(dbpath, 'myDB._db');
-    _db = await openDatabase(path, version: 2,
-        onCreate: (_db, int version) async {
-      await _db.execute('''
+    String path = join(dbpath, 'cafe.db');
+
+    Database myDb = await openDatabase(path, version: 1, onCreate: _onCreate);
+    return myDb;
+  }
+
+  _onCreate(Database db, int version) async {
+    Batch batch = db.batch();
+    batch.execute('''
     CREATE TABLE notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -17,16 +29,8 @@ class SqlDB {
     color INTEGER NOT NULL
     )
     ''');
-      print('----------------DATABASE CREATED----------------');
-    }, onUpgrade: (Database d, int oldversion, int newversion) async {
-      print('--------------DATABASE UPDATED-------------------');
-    });
-    return _db;
-  }
 
-  queryData(String sql) async {
-    List response = await _db!.rawQuery(sql);
-    return response;
+    await batch.commit();
   }
 
   query() async {
@@ -34,18 +38,8 @@ class SqlDB {
     return response;
   }
 
-  insertData(String sql) async {
-    int response = await _db!.rawInsert(sql);
-    return response;
-  }
-
   insert(Map<String, Object> map) async {
     int response = await _db!.insert('notes', map);
-    return response;
-  }
-
-  deleteData(String sql) async {
-    int response = await _db!.rawDelete(sql);
     return response;
   }
 
@@ -55,20 +49,8 @@ class SqlDB {
     return response;
   }
 
-  deleteTasks() async {
-    int response = await _db!.delete('notes');
-    return response;
-  }
-
   deleteAll() async {
-    String dbpath = await getDatabasesPath();
-    String path = join(dbpath, 'myDB._db');
-    await deleteDatabase(path);
-    print('---------- DATABASE DELETED ------------');
-  }
-
-  updateData(String sql) async {
-    int response = await _db!.rawUpdate(sql);
+    int response = await _db!.delete('notes');
     return response;
   }
 

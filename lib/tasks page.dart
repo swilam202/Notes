@@ -16,7 +16,7 @@ class _TaskPageState extends State<TaskPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    sqlDB.initialDB();
+    sqlDB.db;
   }
 
   GlobalKey key = GlobalKey();
@@ -41,19 +41,27 @@ class _TaskPageState extends State<TaskPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        elevation: 1.5,
+        shadowColor: Colors.white,
         backgroundColor: Colors.black,
         title: const Text(
           'Tasks',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: [
           TextButton.icon(
             onPressed: () {
               Get.defaultDialog(
-                backgroundColor: const Color.fromRGBO(52, 52, 52, 0.9),
+                backgroundColor: const Color.fromRGBO(19, 19, 19, 1.0),
                 title: 'Are you sure you want to delete all tasks?',
                 titlePadding: const EdgeInsets.only(
-                    top: 25, left: 20, right: 20, bottom: 15),
+                  top: 25,
+                  left: 20,
+                  right: 20,
+                  bottom: 15,
+                ),
+                titleStyle: const TextStyle(color: Colors.white),
                 content: Row(
                   children: [
                     Expanded(
@@ -70,7 +78,7 @@ class _TaskPageState extends State<TaskPage> {
                     Expanded(
                       child: TextButton(
                         onPressed: () async {
-                          controller.deleteAllTask();
+                          controller.deleteAllTasks();
                           Get.back();
                         },
                         child: const Text(
@@ -95,15 +103,12 @@ class _TaskPageState extends State<TaskPage> {
         ],
       ),
       body: FutureBuilder(
-        future: Future.delayed(
-          const Duration(milliseconds: 1500),
-        ),
+        future: controller.taskList(),
         builder: (_, snapshot) => snapshot.connectionState ==
                 ConnectionState.waiting
             ? const Center(child: CircularProgressIndicator())
             : Obx(
                 () {
-                  controller.taskList();
                   return controller.tasks.isNotEmpty
                       ? ListView.builder(
                           itemCount: controller.tasks.length,
@@ -221,7 +226,8 @@ class _TaskPageState extends State<TaskPage> {
                                                 0,
                                                 controller.tasks[index]['id'],
                                                 'Update task',
-                                                controller.tasks[index]['color'],
+                                                controller.tasks[index]
+                                                    ['color'],
                                               );
                                             },
                                             icon: const Icon(
@@ -249,11 +255,15 @@ class _TaskPageState extends State<TaskPage> {
                           },
                         )
                       : const Center(
-                          child: Text(
-                            'There is no notes for today',
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'There is no notes for today...',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         );
@@ -261,12 +271,12 @@ class _TaskPageState extends State<TaskPage> {
               ),
       ),
       floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.blue,
           child: const Icon(Icons.add),
           onPressed: () {
             titleController.text = '';
             noteController.text = '';
-            sheet('', '', 1, 1, 'New Task',0);
+            sheet('', '', 1, 1, 'New Task', 0);
           }),
     );
   }
@@ -285,7 +295,7 @@ class _TaskPageState extends State<TaskPage> {
     );
   }
 
-  sheet(String one, String two, int index, int id, String text,int color) {
+  sheet(String one, String two, int index, int id, String text, int color) {
     titleController.text = one;
     noteController.text = two;
     controller.selected.value = color;
@@ -361,9 +371,9 @@ class _TaskPageState extends State<TaskPage> {
                     OutlinedButton(
                       style: ButtonStyle(
                         foregroundColor:
-                            MaterialStateProperty.all(Colors.white),
+                            MaterialStateProperty.all(Colors.black),
                         backgroundColor: MaterialStateProperty.all(
-                          const Color.fromRGBO(119, 34, 34, 1.0),
+                          Colors.blue,
                         ),
                         padding: MaterialStateProperty.all(
                           const EdgeInsets.symmetric(
@@ -405,7 +415,7 @@ class _TaskPageState extends State<TaskPage> {
           ),
         ),
       ),
-      backgroundColor: const Color.fromRGBO(52, 52, 52, 1.0),
+      backgroundColor: const Color.fromRGBO(19, 19, 19, 1.0),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
