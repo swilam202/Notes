@@ -1,16 +1,15 @@
-# sqfl
+App for adding new notes with the ability to edit and delete new notes using local database.
 
-A new Flutter project.
+notes list
+![Screenshot_2024-04-03-14-01-46-70_254de13a4bc8758c9908fff1f73e3725](https://github.com/swilam202/Notes/assets/123952365/ce05f733-313a-4a44-bad8-4cfc73b30a9f)
+![Screenshot_2024-04-03-14-02-17-80_254de13a4bc8758c9908fff1f73e3725](https://github.com/swilam202/Notes/assets/123952365/d3a4ba2e-b043-467b-a7f5-45113001f795)
 
-## Getting Started
+add new note
+![Screenshot_2024-04-03-14-02-07-38_254de13a4bc8758c9908fff1f73e3725](https://github.com/swilam202/Notes/assets/123952365/250591f8-0b18-4d54-b5fa-c89563f4f138)
 
-This project is a starting point for a Flutter application.
+update note
+![Screenshot_2024-04-03-14-02-26-20_254de13a4bc8758c9908fff1f73e3725](https://github.com/swilam202/Notes/assets/123952365/57744867-ff46-497f-b48f-e937e5a43d18)
 
-A few resources to get you started if this is your first Flutter project:
+delete all notes
+![Screenshot_2024-04-03-14-02-49-04_254de13a4bc8758c9908fff1f73e3725](https://github.com/swilam202/Notes/assets/123952365/299cfe77-d173-47e9-abcb-05311ba3a002)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
